@@ -1,3 +1,16 @@
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 6.0"
+    }
+  }
+}
+
+provider "google" {
+  project = var.project_id
+  region  = var.region
+}
 resource "google_service_account" "default" {
   account_id   = "sa-github-actions"
   display_name = "Service Account"
@@ -24,9 +37,5 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
-  }
-  provider "google" {
-  project = var.project_id
-  region  = var.region
   }
 }
