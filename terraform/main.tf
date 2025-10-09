@@ -17,6 +17,10 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
   cluster    = google_container_cluster.primary.name
   node_count = 1
 
+provider "google" {
+  project = var.project_id
+  region  = var.region
+}
   node_config {
     preemptible  = true
     machine_type = var.machine_type
