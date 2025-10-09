@@ -21,7 +21,13 @@ jobs:
           terraform_version: 1.9.0
 
       - name: Configure Google credentials
-        run: echo '${{ secrets.GOOGLE_CREDENTIALS }}' > $HOME/gcp_credentials.json
+  shell: bash
+  run: |
+    echo "$GOOGLE_CREDENTIALS" > $HOME/gcp_credentials.json
+    echo "Archivo de credenciales creado en $HOME:"
+    ls -l $HOME/gcp_credentials.json
+  env:
+    GCP_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
       - name: Terraform Init
         run: terraform init
