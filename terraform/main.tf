@@ -1,5 +1,5 @@
 resource "google_service_account" "default" {
-  account_id   = "sa-github-actions@gke-project-prueba.iam.gserviceaccount.com"
+  account_id   = "sa-github-actions"
   display_name = "Service Account"
 }
 
