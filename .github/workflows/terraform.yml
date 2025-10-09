@@ -2,11 +2,7 @@ name: Terraform GKE Deploy
 
 on:
   push:
-    paths:
-      - 'terraform/**'
-  pull_request:
-    paths:
-      - 'terraform/**'
+    branches: [ "main" ]
 
 permissions:
   contents: read
