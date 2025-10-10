@@ -22,7 +22,7 @@ jobs:
       - name: Configure Google credentials
         shell: bash
         run: |
-          echo "$GCP_CREDENTIALS" > $HOME/gcp_credentials.json
+          echo "$GOOGLE_CREDENTIALS" > $HOME/gcp_credentials.json
           echo "✅ Archivo de credenciales creado:"
           ls -l $HOME/gcp_credentials.json
         env:
