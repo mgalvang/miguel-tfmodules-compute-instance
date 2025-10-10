@@ -26,7 +26,6 @@ jobs:
           GCP_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
       - name: Terraform Init
-        working-directory: infra
         run: terraform init
         env:
           GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcp_credentials.json
