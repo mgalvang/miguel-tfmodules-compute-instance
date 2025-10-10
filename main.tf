@@ -11,12 +11,8 @@ provider "google" {
   project = var.project_id
   region  = var.region
 }
-resource "google_service_account" "default" {
-  account_id   = "sa-github-actions"
-  display_name = "Service Account"
-}
 
-resource "google_container_cluster" "primary" {
+resource "google_container_cluster" {
   name     = var.cluster_name
   location = var.region
 
