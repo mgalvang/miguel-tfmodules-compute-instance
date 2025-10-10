@@ -1,7 +1,10 @@
 name: Terraform GKE Deploy
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main            # 👈 se ejecuta automáticamente al hacer push a main
+  workflow_dispatch:     # 👈 también permite lanzarlo manualmente desde GitHub Actions
 
 jobs:
   deploy:
