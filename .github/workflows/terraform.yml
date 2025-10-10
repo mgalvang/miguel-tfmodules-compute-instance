@@ -1,11 +1,7 @@
 name: Terraform GKE Deploy
 
 on:
-  push:
-    branches: [ "main" ]
-
-permissions:
-  contents: read
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -23,21 +19,26 @@ jobs:
       - name: Configure Google credentials
         shell: bash
         run: |
-          echo "${{ secrets.GOOGLE_CREDENTIALS }}" > $HOME/gcp_credentials.json
-          echo "Archivo de credenciales creado en $HOME:"
+          echo "$GCP_CREDENTIALS" > $HOME/gcp_credentials.json
+          echo "✅ Archivo de credenciales creado:"
           ls -l $HOME/gcp_credentials.json
         env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          GCP_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
       - name: Terraform Init
+        working-directory: infra
         run: terraform init
-        
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcp_credentials.json
+
       - name: Terraform Plan
-        run: terraform plan
+        working-directory: infra
+        run: terraform plan -out=tfplan
         env:
           GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcp_credentials.json
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        working-directory: infra
+        run: terraform apply -auto-approve tfplan
         env:
           GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcp_credentials.json
