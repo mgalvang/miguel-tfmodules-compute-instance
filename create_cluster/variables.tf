@@ -12,7 +12,7 @@ variable "region" {
 variable "cluster_name" {
   description = "Nombre del cluster GKE"
   type        = string
-  default     = "gke-prueba-tf"
+  default     = "gke-prueba-tf-miguel"
 }
 
 variable "node_pool_name" {
