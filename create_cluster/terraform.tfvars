@@ -1,0 +1,6 @@
+project_id           = "gke-project-prueba"
+region               = "europe-west1"
+cluster_name         = "gke-prueba-tf"
+node_pool_name       = "tf-node-pool"
+machine_type         = "e2-medium"
+service_account_email = "sa-github-actions@gke-project-prueba.iam.gserviceaccount.com"

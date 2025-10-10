@@ -32,15 +32,18 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+        working-directory: create_cluster
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp_credentials.json
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan
+        working-directory: create_cluster
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp_credentials.json
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
+        working-directory: create_cluster
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp_credentials.json
