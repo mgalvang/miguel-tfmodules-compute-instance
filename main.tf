@@ -12,7 +12,7 @@ provider "google" {
   region  = var.region
 }
 
-resource "google_container_cluster" {
+resource "google_container_cluster" "gke-terraform"{
   name     = var.cluster_name
   location = var.region
 
