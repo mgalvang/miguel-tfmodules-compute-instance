@@ -1,4 +1,4 @@
-name: Terraform GKE Deploy
+name: Terraform GKE Deploy Cluster
 
 on:
   push:
