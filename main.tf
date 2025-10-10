@@ -21,7 +21,7 @@ resource "google_container_cluster" "primary" {
   location = var.region
 
   remove_default_node_pool = true
-  initial_node_count       = 1
+  initial_node_count       = 2
 }
 
 resource "google_container_node_pool" "primary_preemptible_nodes" {
