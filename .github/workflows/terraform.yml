@@ -34,13 +34,11 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcp_credentials.json
 
       - name: Terraform Plan
-        working-directory: infra
         run: terraform plan -out=tfplan
         env:
           GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcp_credentials.json
 
       - name: Terraform Apply
-        working-directory: infra
         run: terraform apply -auto-approve tfplan
         env:
           GOOGLE_APPLICATION_CREDENTIALS: $HOME/gcp_credentials.json
