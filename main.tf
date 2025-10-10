@@ -12,7 +12,7 @@ provider "google" {
   region  = var.region
 }
 
-resource "google_container_cluster" "gke-terraform"{
+resource "google_container_cluster" "primary"{
   name     = var.cluster_name
   location = var.region
 
@@ -20,7 +20,7 @@ resource "google_container_cluster" "gke-terraform"{
   initial_node_count       = 1
 }
 
-resource "google_container_node_pool" "gke-terraform_preemptible_nodes" {
+resource "google_container_node_pool" "primary_preemptible_nodes" {
   name       = var.node_pool_name
   location   = var.region
   cluster    = google_container_cluster.primary.name
