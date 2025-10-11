@@ -10,6 +10,6 @@ variable "region" {
 }
 variable "bucket_name" {
   description = "Nombre del bucket"
-  type = "string"
+  type = string
   default = "bucket-prueba-tf-miguel"
 }
