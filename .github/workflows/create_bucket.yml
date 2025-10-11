@@ -1,9 +1,6 @@
 name: Terraform GCS Create Bucket
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
