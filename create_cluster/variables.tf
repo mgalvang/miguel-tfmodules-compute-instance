@@ -24,6 +24,7 @@ variable "node_pool_name" {
 variable "machine_type" {
   description = "Tipo de máquina para los nodos"
   type        = string
+  default     = "e2-medium"
 }
 
 variable "service_account_email" {
