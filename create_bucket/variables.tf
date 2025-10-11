@@ -6,7 +6,7 @@ variable "project_id" {
 variable "region" {
   description = "Región donde se desplegarán los recursos"
   type        = string
-  default     = "europe-west1-b"
+  default     = "europe-west1"
 }
 variable "bucket_name" {
   description = "Nombre del bucket"
