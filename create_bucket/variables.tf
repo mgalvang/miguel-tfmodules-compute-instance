@@ -9,7 +9,7 @@ variable "region" {
   default     = "europe-west1-b"
 }
 variable "bucket_name" {
-  description: "Nombre del bucket"
-  type: "string"
-  default: "bucket-prueba-tf-miguel"
+  description = "Nombre del bucket"
+  type = "string"
+  default = "bucket-prueba-tf-miguel"
 }
