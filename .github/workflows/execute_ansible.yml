@@ -39,7 +39,10 @@ jobs:
           USER=root
 
           # Open IAP tunnel (local port 2200)
-          gcloud compute start-iap-tunnel $INSTANCE_NAME 22 --zone=$ZONE --local-host-port=127.0.0.1:2200 --project=$GCP_PROJECT_ID --background
+          nohup gcloud compute start-iap-tunnel $INSTANCE_NAME 22 \
+          --zone=$ZONE \
+          --local-host-port=127.0.0.1:2200 \
+          --project=$GCP_PROJECT_ID > tunnel.log 2>&1 &
 
           # Wait a moment for tunnel to initialize
           sleep 10
