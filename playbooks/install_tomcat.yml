@@ -4,8 +4,8 @@
   tasks:
     - name: Create group tomcat
       group:
-      name: g_tomcat
-      state: present
+        name: g_tomcat
+        state: present
     - name: Create user tomcat
       user:
         name: tomcat
