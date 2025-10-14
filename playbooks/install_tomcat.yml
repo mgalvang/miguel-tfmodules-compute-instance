@@ -1,0 +1,26 @@
+- name: Install Tomcat
+  hosts: tomcat_servers
+  become: true
+  tasks:
+    - name: Install Java
+      yum:
+        name: java-1.8.0-openjdk
+        state: present
+    - name: Download Tomcat
+      get_url:
+        url: "https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.54/bin/apache-tomcat-9.0.54.tar.gz"
+        dest: /opt/
+    - name: Extract Tomcat
+      unarchive:
+        src: /tmp/apache-tomcat-9.0.54.tar.gz
+        dest: /home/
+        remote_src: yes
+    - name: Configure Tomcat Users
+      template:
+        src: tomcat-users.xml.j2
+        dest: /home/apache-tomcat-9.0.54/conf/tomcat-users.xml
+    - name: Start Tomcat Service
+      service:
+        name: tomcat
+        state: started
+        enabled: yes

@@ -1,0 +1,45 @@
+---
+- hosts: vm-prueba-tf-miguel
+  become: true
+  vars:
+    ansible_python_interpreter: "/usr/bin/env python3"
+  tasks:
+    - name: Install dnf-utils package
+      dnf:
+      name: dnf-utils
+      state: latest
+      update_cache: yes
+
+    - name: Install aptitude using dnf
+      dnf: name=aptitude state=latest update_cache=yes force_apt_get=yes      
+
+    - name: Install required system packages
+      dnf: name={{ item }} state=latest update_cache=yes
+      loop: [ 'ca-certificates', 'curl', 'dnf-plugins-core', 'python3-pip', 'python3-virtualenv', 'python3-setuptools']      
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/centos/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: dnf https://download.docker.com/linux/centos stretch stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      dnf: update_cache=yes name=docker-ce state=latest
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+
+    - name: Install docker-compose
+      pip:
+        name: docker-compose
+
+    - name: Create directory
+      file:
+        path: /src/www/drone
+        state: directory
+        recurse: yes
