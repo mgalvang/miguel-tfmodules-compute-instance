@@ -1,7 +1,7 @@
 
 
 resource "google_compute_instance" "default" {
-  vm_name     = var.cluster_name
+  name     = var.vm_name
   machine_type = var.machine_type
   location = var.region
 
@@ -16,7 +16,8 @@ resource "google_compute_instance" "default" {
     subnetwork = var.subnetwork
   }
 
-  service_account_email {
-    service_account_email = var.service_account_email
+  google_service_account {
+    email = var.service_account_email
+    scopes = ["cloud-platform"]
   }
 }
