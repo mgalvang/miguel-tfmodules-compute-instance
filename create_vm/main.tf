@@ -1,6 +1,6 @@
 
 
-resource "google_cloud_compute_instance" "default" {
+resource "google_compute_instance" "default" {
   vm_name     = var.cluster_name
   machine_type = var.machine_type
   location = var.region
