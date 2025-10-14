@@ -16,7 +16,7 @@ resource "google_compute_instance" "default" {
     subnetwork = var.subnetwork
   }
 
-  google_service_account {
+  service_account {
     email = var.service_account_email
     scopes = ["cloud-platform"]
   }
