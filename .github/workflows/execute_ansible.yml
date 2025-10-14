@@ -1,0 +1,51 @@
+name: Deploy to GCP VM via IAP Tunnel with Ansible
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
+          export_default_credentials: true
+
+      - name: Install Ansible on GitHub runner
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ansible openssh-client
+
+      - name: Configure SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Create IAP tunnel and run Ansible
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: |
+          # Variables
+          INSTANCE_NAME=vm-prueba-tf-miguel
+          ZONE=europe-west1-b
+          USER=root
+
+          # Open IAP tunnel (local port 2200)
+          gcloud compute start-iap-tunnel $INSTANCE_NAME 22 --zone=$ZONE --local-host-port=127.0.0.1:2200 --project=$GCP_PROJECT_ID --background
+
+          # Wait a moment for tunnel to initialize
+          sleep 10
+
+          # Run Ansible against the tunneled connection
+          ansible-playbook -i "127.0.0.1," playbooks/install_docker.yml \
+            --user=$USER \
+            --private-key ~/.ssh/id_rsa \
+            -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand=\"none\" -p 2200'"
