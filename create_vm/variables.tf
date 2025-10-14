@@ -9,7 +9,7 @@ variable "region" {
   default     = "europe-west1-b"
 }
 
-variable "vm_name" {
+variable "name" {
   description = "Nombre de la VM"
   type        = string
   default     = "vm-prueba-tf-miguel"
@@ -17,7 +17,7 @@ variable "vm_name" {
 variable machine_type {
   description = "Tipo de Maquina"
   type = string
-  default = "n1-standard"
+  default = "n1-standard-1"
 }
 variable os_image {
   type = string
