@@ -1,9 +1,22 @@
 
 
-resource "google_cloud_run" "primary"{
-  name     = var.cluster_name
+resource "google_cloud_compute_instance" "default" {
+  vm_name     = var.cluster_name
+  machine_type = var.machine_type
   location = var.region
 
-  remove_default_node_pool = true
-  initial_node_count       = 1
+  boot_disk {
+    initialize_params {
+      image = var.os_image
+    }
+  }
+
+  network_interface {
+    network = var.network
+    subnetwork = var.subnetwork
+  }
+
+  service_account_email {
+    service_account_email = var.service_account_email
+  }
 }

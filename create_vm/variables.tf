@@ -6,15 +6,29 @@ variable "project_id" {
 variable "region" {
   description = "Región donde se desplegarán los recursos"
   type        = string
-  default     = "europe-west1"
+  default     = "europe-west1-b"
 }
 
 variable "vm_name" {
-  description = "Nombre de la CR"
+  description = "Nombre de la VM"
   type        = string
   default     = "vm-prueba-tf-miguel"
 }
-
+variable machine_type {
+  description = "Tipo de Maquina"
+  type = string
+  default = "n1-standard"
+}
+variable os_image {
+  type = string
+  default = "gce-uefi-images/centos-7"
+}
+variable network {
+  type = string
+}
+variable subnetwork {
+  type = string
+}
 variable "service_account_email" {
   description = "Cuenta de servicio para los nodos"
   type        = string
