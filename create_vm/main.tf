@@ -1,7 +1,7 @@
 
 
 resource "google_compute_instance" "default" {
-  name     = var.vm_name
+  name     = var.name
   machine_type = var.machine_type
   location = var.region
 
