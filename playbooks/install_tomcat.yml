@@ -7,6 +7,9 @@
         name: tomcat
         shell: /bin/bash
         create_home: yes
+        register: user_tomcat
+    - debug: 
+      var: user_tomcat
     - name: Change pass user tomcat
       user:
         name: tomcat
