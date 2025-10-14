@@ -21,7 +21,7 @@ variable machine_type {
 }
 variable os_image {
   type = string
-  default = "gce-uefi-images/centos-7"
+  default = ""
 }
 variable network {
   type = string
