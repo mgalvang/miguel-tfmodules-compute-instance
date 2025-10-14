@@ -2,6 +2,24 @@
   hosts: tomcat_servers
   become: true
   tasks:
+    - name: Create user tomcat
+      user:
+        name: tomcat
+        shell: /bin/bash
+        create_home: yes
+    - name: Change pass user tomcat
+      user:
+        name: tomcat
+        password: "{{ 'tomcat' | password_hash('sha512') }}"
+    - name: Create group tomcat
+      group:
+        name: g_tomcat
+        state: present
+    - name: Add user tomcat to group g_tomcat
+      user:
+        name: tomcat
+        groups: g_tomcat
+        append: yes
     - name: Install Java
       yum:
         name: java-1.8.0-openjdk
