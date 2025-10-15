@@ -1,4 +1,4 @@
-name: Terraform
+name: Terraform and Ansible Deployment
 
 on:
   push:
@@ -22,10 +22,7 @@ jobs:
         shell: bash
         run: |
           echo "${GOOGLE_CREDENTIALS}" > "${GITHUB_WORKSPACE}/gcp_credentials.json"
-          echo "✅ Archivo de credenciales creado en ${GITHUB_WORKSPACE}:"
-          ls -l "${GITHUB_WORKSPACE}/gcp_credentials.json"
-          echo "Primeras líneas:"
-          head -n 5 "${GITHUB_WORKSPACE}/gcp_credentials.json"
+          echo "✅ Archivo de credenciales creado en ${GITHUB_WORKSPACE}."
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
@@ -60,63 +57,70 @@ jobs:
   ansible:
     needs: deploy_vm 
     runs-on: ubuntu-latest
+
     steps:
       - name: Download Terraform outputs artifact
         uses: actions/download-artifact@v4
         with:
           name: terraform-outputs
           path: ./terraform_outputs
+
       - name: Show downloaded terraform_outputs.json
         run: cat ./terraform_outputs/terraform_outputs.json
-      - name: Read Terraform outputs to env
+
+      - name: Read Terraform outputs and set outputs
         id: read_outputs
         run: |
-          echo "INSTANCE_NAME=$(jq -r '.instance_name.value' ./terraform_outputs/terraform_outputs.json)" >> $GITHUB_ENV
-          echo "ZONE=$(jq -r '.zone.value' ./terraform_outputs/terraform_outputs.json)" >> $GITHUB_ENV
-          echo "PROJECT_ID=$(jq -r '.project_id.value' ./terraform_outputs/terraform_outputs.json)" >> $GITHUB_ENV
-          echo "PRIVATE_KEY_PATH=$(jq -r '.ansible_ssh_private_key_path.value' ./terraform_outputs/terraform_outputs.json)" >> $GITHUB_ENV
+          instance_name=$(jq -r '.instance_name.value' ./terraform_outputs/terraform_outputs.json)
+          zone=$(jq -r '.zone.value' ./terraform_outputs/terraform_outputs.json)
+          project_id=$(jq -r '.project_id.value' ./terraform_outputs/terraform_outputs.json)
+          private_key_content=$(jq -r '.ansible_ssh_private_key_content.value' ./terraform_outputs/terraform_outputs.json)
+
+          echo "instance_name=$instance_name" >> $GITHUB_ENV
+          echo "zone=$zone" >> $GITHUB_ENV
+          echo "project_id=$project_id" >> $GITHUB_ENV
+
+          # Guardamos la clave privada en archivo
+          echo "$private_key_content" | base64 --decode > ./private_key.pem
+          chmod 600 ./private_key.pem
+          echo "private_key_path=$(pwd)/private_key.pem" >> $GITHUB_ENV
+
+          # Outputs para uso en pasos con expressions
+          echo "::set-output name=instance_name::$instance_name"
+          echo "::set-output name=zone::$zone"
+          echo "::set-output name=project_id::$project_id"
+          echo "::set-output name=private_key_path::$(pwd)/private_key.pem"
 
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ env.PROJECT_ID }}
+          project_id: ${{ steps.read_outputs.outputs.project_id }}
           service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
           export_default_credentials: true
 
-
-      - name: Install Ansible on GitHub runner
+      - name: Install Ansible and dependencies
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y ansible openssh-client jq
+          sudo apt-get install -y ansible openssh-client jq netcat
 
-      - name: Create IAP tunnel and run Ansible
+      - name: Run Ansible playbook through IAP tunnel
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp_credentials.json
-          GCP_PROJECT_ID: ${{ env.PROJECT_ID }}
-          INSTANCE_NAME: ${{ env.INSTANCE_NAME }}
-          ZONE: ${{ env.ZONE }}
+          GCP_PROJECT_ID: ${{ steps.read_outputs.outputs.project_id }}
+          INSTANCE_NAME: ${{ steps.read_outputs.outputs.instance_name }}
+          ZONE: ${{ steps.read_outputs.outputs.zone }}
           USER: ansible
-          PRIVATE_KEY_PATH: ${{ env.PRIVATE_KEY_PATH }}
+          PRIVATE_KEY_PATH: ${{ steps.read_outputs.outputs.private_key_path }}
         run: |
-          cloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
-
-          nohup gcloud compute start-iap-tunnel $INSTANCE_NAME 22 \
-            --zone=$ZONE \
-            --local-host-port=127.0.0.1:2200 \
-            --project=$GCP_PROJECT_ID > tunnel.log 2>&1 &
-
-          echo "🕐 Esperando a que el túnel IAP esté disponible..."
-          for i in {1..20}; do
-          nc -z 127.0.0.1 2200 && echo "✅ Túnel activo" && break
-          echo "⏳ Intento $i/20: túnel aún no disponible..."
-          sleep 5
-          done
-
-          ansible-playbook -i "127.0.0.1," ansible/inventory.ini ansible/playbooks/install_tomcat.yml \
-          --user=$USER \
-          --private-key $PRIVATE_KEY_PATH \
-          -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no -p 2200'"
-          
+          gcloud compute ssh $INSTANCE_NAME --zone=$ZONE --project=$GCP_PROJECT_ID --tunnel-through-iap -- \
+            ansible-playbook -i "localhost," ansible/inventory.ini ansible/playbooks/install_tomcat.yml \
+            --user=$USER \
+            --private-key=$PRIVATE_KEY_PATH \
+            -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no -p 22'"
