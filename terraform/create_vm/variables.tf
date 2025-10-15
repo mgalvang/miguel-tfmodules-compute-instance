@@ -13,7 +13,6 @@ variable "zone" {
 variable "region" {
   description = "Región de GCP extraída de la zona"
   type        = string
-  default     = substr(var.zone, 0, length(var.zone) - 2)
 }
 variable "name" {
   description = "Nombre de la VM"

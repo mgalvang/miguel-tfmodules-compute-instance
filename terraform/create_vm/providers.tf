@@ -13,5 +13,5 @@ terraform {
 
 provider "google" {
   project = var.project_id
-  region  = var.region
+  region  = substr(var.zone, 0, length(var.zone) - 2)
 }
