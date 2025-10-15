@@ -105,7 +105,12 @@ jobs:
             --local-host-port=127.0.0.1:2200 \
             --project=$GCP_PROJECT_ID > tunnel.log 2>&1 &
 
-          sleep 10
+          echo "🕐 Esperando a que el túnel IAP esté disponible..."
+          for i in {1..20}; do
+          nc -z 127.0.0.1 2200 && echo "✅ Túnel activo" && break
+          echo "⏳ Intento $i/10: túnel aún no disponible..."
+          sleep 5
+          done
 
           ansible-playbook -i ansible/inventory.ini ansible/playbooks/install_tomcat.yml \
           --user=$USER \
