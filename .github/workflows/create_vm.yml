@@ -1,4 +1,4 @@
-name: Terraform Compute Engine Deploy VM
+name: Terraform
 
 on:
   push:

@@ -1,9 +1,9 @@
+name: Ansible
 on:
   workflow_run:
-    workflows: ["Terraform Compute Engine Deploy VM"] 
+    workflows: ["Terraform"] 
     types:
       - completed
-  workflow_dispatch:
 
 jobs:
   ansible:
@@ -15,7 +15,8 @@ jobs:
         with:
           name: terraform-outputs
           path: ./terraform_outputs
-
+      - name: Show downloaded terraform_outputs.json
+        run: cat ./terraform_outputs/terraform_outputs.json
       - name: Read Terraform outputs to env
         id: read_outputs
         run: |
