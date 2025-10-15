@@ -115,7 +115,7 @@ jobs:
           sleep 5
           done
 
-          ansible-playbook -i ansible/inventory.ini ansible/playbooks/install_tomcat.yml \
+          ansible-playbook -i "127.0.0.1," ansible/inventory.ini ansible/playbooks/install_tomcat.yml \
           --user=$USER \
           --private-key $PRIVATE_KEY_PATH \
           -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no -p 2200'"
