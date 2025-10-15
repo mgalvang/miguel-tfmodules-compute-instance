@@ -3,7 +3,7 @@ variable "project_id" {
   type        = string
 }
 
-variable "region" {
+variable "zone" {
   description = "Región donde se desplegarán los recursos"
   type        = string
   default     = "europe-west1-b"
@@ -31,5 +31,9 @@ variable subnetwork {
 }
 variable "service_account_email" {
   description = "Cuenta de servicio para los nodos"
+  type        = string
+}
+variable "public_ssh_key" {
+  description = "Clave pública SSH para usuario ansible"
   type        = string
 }

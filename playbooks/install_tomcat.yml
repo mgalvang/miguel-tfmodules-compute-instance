@@ -1,5 +1,5 @@
 - name: Install Tomcat
-  hosts: tomcat_servers
+  hosts: rocky_servers
   become: true
   tasks:
     - name: Create group tomcat

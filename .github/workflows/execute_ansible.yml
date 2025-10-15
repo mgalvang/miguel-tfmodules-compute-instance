@@ -1,10 +1,14 @@
 name: Deploy to GCP VM via IAP Tunnel with Ansible
 
 on:
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["Terraform Compute Engine Deploy VM"] 
+    types:
+      - completed
 
 jobs:
-  deploy:
+  ansible:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -23,12 +27,6 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y ansible openssh-client
 
-      - name: Configure SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
       - name: Create IAP tunnel and run Ansible
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
@@ -36,7 +34,7 @@ jobs:
           # Variables
           INSTANCE_NAME=vm-prueba-tf-miguel
           ZONE=europe-west1-b
-          USER=root
+          USER=ansible
 
           # Open IAP tunnel (local port 2200)
           nohup gcloud compute start-iap-tunnel $INSTANCE_NAME 22 \
@@ -48,7 +46,7 @@ jobs:
           sleep 10
 
           # Run Ansible against the tunneled connection
-          ansible-playbook -i "127.0.0.1," playbooks/install_tomcat.yml \
+          ansible-playbook -i "127.0.0.1," inventory.ini playbooks/install_tomcat.yml \
             --user=$USER \
             --private-key ~/.ssh/id_rsa \
             -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand=\"none\" -p 2200'"
