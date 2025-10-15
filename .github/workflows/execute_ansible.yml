@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -46,7 +47,7 @@ jobs:
           sleep 10
 
           # Run Ansible against the tunneled connection
-          ansible-playbook -i "127.0.0.1," inventory.ini ansible/playbooks/install_tomcat.yml \
+          ansible-playbook -i "127.0.0.1," ansible/playbooks/inventory.ini ansible/playbooks/install_tomcat.yml \
             --user=$USER \
             --private-key ~/.ssh/id_rsa \
             -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand=\"none\" -p 2200'"

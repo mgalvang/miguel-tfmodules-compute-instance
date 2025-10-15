@@ -4,10 +4,9 @@ on:
   push:
     branches:
       - develop 
-  workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy_vm:
     runs-on: ubuntu-latest
 
     steps:
