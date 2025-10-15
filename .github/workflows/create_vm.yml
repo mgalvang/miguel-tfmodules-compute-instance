@@ -60,6 +60,7 @@ jobs:
       - name: Clean up credentials file
         run: rm -f "${GITHUB_WORKSPACE}/gcp_credentials.json" 
   ansible:
+    needs: deploy_vm 
     runs-on: ubuntu-latest
     steps:
       - name: Download Terraform outputs artifact
