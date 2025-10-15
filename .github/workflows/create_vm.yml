@@ -86,7 +86,7 @@ jobs:
           service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
           export_default_credentials: true
 
-          
+
       - name: Install Ansible on GitHub runner
         run: |
           sudo apt-get update -y
@@ -107,7 +107,7 @@ jobs:
 
           sleep 10
 
-          ansible-playbook -i "127.0.0.1," ansible/inventory.ini ansible/playbooks/install_tomcat.yml \
-            --user=$USER \
-            --private-key $PRIVATE_KEY_PATH \
-            -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand=\"none\" -p 2200'"
+          ansible-playbook -i ansible/inventory.ini ansible/playbooks/install_tomcat.yml \
+          --user=$USER \
+          --private-key $PRIVATE_KEY_PATH \
+          -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no -p 2200'"
