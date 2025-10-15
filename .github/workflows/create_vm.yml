@@ -94,12 +94,15 @@ jobs:
 
       - name: Create IAP tunnel and run Ansible
         env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp_credentials.json
           GCP_PROJECT_ID: ${{ env.PROJECT_ID }}
           INSTANCE_NAME: ${{ env.INSTANCE_NAME }}
           ZONE: ${{ env.ZONE }}
           USER: ansible
           PRIVATE_KEY_PATH: ${{ env.PRIVATE_KEY_PATH }}
         run: |
+          cloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+
           nohup gcloud compute start-iap-tunnel $INSTANCE_NAME 22 \
             --zone=$ZONE \
             --local-host-port=127.0.0.1:2200 \
@@ -108,7 +111,7 @@ jobs:
           echo "🕐 Esperando a que el túnel IAP esté disponible..."
           for i in {1..20}; do
           nc -z 127.0.0.1 2200 && echo "✅ Túnel activo" && break
-          echo "⏳ Intento $i/10: túnel aún no disponible..."
+          echo "⏳ Intento $i/20: túnel aún no disponible..."
           sleep 5
           done
 
