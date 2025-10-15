@@ -56,3 +56,6 @@ jobs:
         with:
           name: terraform-outputs
           path: terraform/create_vm/terraform_outputs.json
+
+      - name: Clean up credentials file
+        run: rm -f "${GITHUB_WORKSPACE}/gcp_credentials.json" 
