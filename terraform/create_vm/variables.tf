@@ -4,24 +4,23 @@ variable "project_id" {
 }
 
 variable "zone" {
-  description = "Región donde se desplegarán los recursos"
+  description = "Zona donde se desplegarán los recursos"
   type        = string
-  default     = "europe-west1-b"
 }
-
+variable "region" {
+  description = "Region donde se desplegarán los recursos"
+  type        = string
+}
 variable "name" {
   description = "Nombre de la VM"
   type        = string
-  default     = "vm-prueba-tf-miguel"
 }
 variable machine_type {
   description = "Tipo de Maquina"
   type = string
-  default = "n1-standard-1"
 }
 variable os_image {
   type = string
-  default = ""
 }
 variable network {
   type = string
