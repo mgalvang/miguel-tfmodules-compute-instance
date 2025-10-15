@@ -1,6 +1,5 @@
 project_id           = "gke-project-prueba"
 zone               = "europe-west1-b"
-region             = "europe-west1"
 machine_type       = "n1-standard-1"
 name         = "vm-prueba-tf-miguel"
 os_image        = "rocky-linux-cloud/rocky-linux-9-v20250912"

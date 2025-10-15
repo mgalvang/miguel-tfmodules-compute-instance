@@ -1,6 +1,9 @@
 name: Terraform Compute Engine Deploy VM
 
 on:
+  push:
+    branches:
+      - develop 
   workflow_dispatch:
 
 jobs:

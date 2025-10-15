@@ -1,4 +1,8 @@
 
+resource "tls_private_key" "ansible_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
 
 resource "google_compute_instance" "default" {
   name     = var.name
