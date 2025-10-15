@@ -5,6 +5,7 @@ on:
     workflows: ["Terraform Compute Engine Deploy VM"] 
     types:
       - completed
+  workflow_dispatch:
 
 jobs:
   ansible:
