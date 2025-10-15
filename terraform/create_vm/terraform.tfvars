@@ -6,3 +6,4 @@ os_image        = "rocky-linux-cloud/rocky-linux-9-v20250912"
 network         = "vpc-shared"
 subnetwork      = "lz-network-prueba"
 service_account_email = "sa-github-actions@gke-project-prueba.iam.gserviceaccount.com"
+tags = ["http-server", "https-server", "allow-tcp"]

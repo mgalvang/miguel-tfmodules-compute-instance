@@ -33,7 +33,7 @@ variable "service_account_email" {
   description = "Cuenta de servicio para los nodos"
   type        = string
 }
-variable "public_ssh_key" {
-  description = "Clave pública SSH para usuario ansible"
-  type        = string
+variable "tags" {
+  description = "Etiquetas para la instancia"
+  type        = list(string)
 }

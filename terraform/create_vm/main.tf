@@ -20,26 +20,30 @@ resource "google_compute_instance" "default" {
     email = var.service_account_email
     scopes = ["cloud-platform"]
   }
-
-  tags = ["http-server", "https-server", "allow-tcp"]
+  
+  tags = var.tags
 
   metadata_startup_script = <<-EOT
     #!/bin/bash
 
-    # Crear grupo y usuario ansible
     groupadd -f g_ansible
     id -u ansible &>/dev/null || useradd -m -s /bin/bash -g g_ansible ansible
 
-    # Crear carpeta .ssh y agregar clave pública para conexión SSH
     mkdir -p /home/ansible/.ssh
-    echo "${var.public_ssh_key}" > /home/ansible/.ssh/authorized_keys
+    echo "${tls_private_key.ansible_key.public_key_openssh}" > /home/ansible/.ssh/authorized_keys
     chown -R ansible:g_ansible /home/ansible/.ssh
     chmod 700 /home/ansible/.ssh
     chmod 600 /home/ansible/.ssh/authorized_keys
 
-    # Dar permiso sudo sin contraseña al usuario ansible
     echo "ansible ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/ansible
     chmod 440 /etc/sudoers.d/ansible
   EOT
+}
+
+resource "local_file" "private_key" {
+  content          = tls_private_key.ansible_key.private_key_pem
+  filename         = "${path.module}/ansible_key.pem"
+  file_permission  = "0600"
+}
 
 }
