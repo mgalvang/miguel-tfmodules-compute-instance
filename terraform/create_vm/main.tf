@@ -20,7 +20,7 @@ resource "google_compute_instance" "default" {
     email = var.service_account_email
     scopes = ["cloud-platform"]
   }
-  
+
   tags = var.tags
 
   metadata_startup_script = <<-EOT
@@ -44,6 +44,4 @@ resource "local_file" "private_key" {
   content          = tls_private_key.ansible_key.private_key_pem
   filename         = "${path.module}/ansible_key.pem"
   file_permission  = "0600"
-}
-
 }
