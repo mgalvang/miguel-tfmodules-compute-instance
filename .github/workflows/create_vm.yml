@@ -54,6 +54,7 @@ jobs:
           name: terraform-outputs
           path: terraform/create_vm/terraform_outputs.json
 
+          
   ansible:
     needs: deploy_vm
     runs-on: ubuntu-latest
