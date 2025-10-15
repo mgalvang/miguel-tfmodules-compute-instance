@@ -4,7 +4,7 @@ on:
     workflows: ["Terraform"] 
     types:
       - completed
-
+  workflow_dispatch:
 jobs:
   ansible:
     runs-on: ubuntu-latest
