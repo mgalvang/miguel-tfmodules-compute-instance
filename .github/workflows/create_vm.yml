@@ -52,7 +52,7 @@ jobs:
         working-directory: terraform/create_vm
 
       - name: Upload Terraform outputs as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-outputs
           path: terraform/create_vm/terraform_outputs.json
