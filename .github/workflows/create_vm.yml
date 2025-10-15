@@ -59,3 +59,55 @@ jobs:
 
       - name: Clean up credentials file
         run: rm -f "${GITHUB_WORKSPACE}/gcp_credentials.json" 
+  ansible:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Terraform outputs artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-outputs
+          path: ./terraform_outputs
+      - name: Show downloaded terraform_outputs.json
+        run: cat ./terraform_outputs/terraform_outputs.json
+      - name: Read Terraform outputs to env
+        id: read_outputs
+        run: |
+          echo "INSTANCE_NAME=$(jq -r '.instance_name.value' ./terraform_outputs/terraform_outputs.json)" >> $GITHUB_ENV
+          echo "ZONE=$(jq -r '.zone.value' ./terraform_outputs/terraform_outputs.json)" >> $GITHUB_ENV
+          echo "PROJECT_ID=$(jq -r '.project_id.value' ./terraform_outputs/terraform_outputs.json)" >> $GITHUB_ENV
+          echo "PRIVATE_KEY_PATH=$(jq -r '.ansible_ssh_private_key_path.value' ./terraform_outputs/terraform_outputs.json)" >> $GITHUB_ENV
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
+          export_default_credentials: true
+
+      - name: Install Ansible on GitHub runner
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ansible openssh-client jq
+
+      - name: Create IAP tunnel and run Ansible
+        env:
+          GCP_PROJECT_ID: ${{ env.PROJECT_ID }}
+          INSTANCE_NAME: ${{ env.INSTANCE_NAME }}
+          ZONE: ${{ env.ZONE }}
+          USER: ansible
+          PRIVATE_KEY_PATH: ${{ env.PRIVATE_KEY_PATH }}
+        run: |
+          nohup gcloud compute start-iap-tunnel $INSTANCE_NAME 22 \
+            --zone=$ZONE \
+            --local-host-port=127.0.0.1:2200 \
+            --project=$GCP_PROJECT_ID > tunnel.log 2>&1 &
+
+          sleep 10
+
+          ansible-playbook -i "127.0.0.1," ansible/inventory.ini ansible/playbooks/install_tomcat.yml \
+            --user=$USER \
+            --private-key $PRIVATE_KEY_PATH \
+            -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand=\"none\" -p 2200'"
