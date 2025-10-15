@@ -55,7 +55,7 @@ jobs:
           path: terraform/create_vm/terraform_outputs.json
 
   ansible:
-    needs: deploy_vm 
+    needs: deploy_vm
     runs-on: ubuntu-latest
 
     steps:
@@ -76,16 +76,14 @@ jobs:
           project_id=$(jq -r '.project_id.value' ./terraform_outputs/terraform_outputs.json)
           private_key_content=$(jq -r '.ansible_ssh_private_key_content.value' ./terraform_outputs/terraform_outputs.json)
 
-          echo "instance_name=$instance_name" >> $GITHUB_ENV
-          echo "zone=$zone" >> $GITHUB_ENV
-          echo "project_id=$project_id" >> $GITHUB_ENV
+          echo "INSTANCE_NAME=$instance_name" >> $GITHUB_ENV
+          echo "ZONE=$zone" >> $GITHUB_ENV
+          echo "PROJECT_ID=$project_id" >> $GITHUB_ENV
 
-          # Guardamos la clave privada en archivo
           echo "$private_key_content" | base64 --decode > ./private_key.pem
           chmod 600 ./private_key.pem
-          echo "private_key_path=$(pwd)/private_key.pem" >> $GITHUB_ENV
+          echo "PRIVATE_KEY_PATH=$(pwd)/private_key.pem" >> $GITHUB_ENV
 
-          # Outputs para uso en pasos con expressions
           echo "::set-output name=instance_name::$instance_name"
           echo "::set-output name=zone::$zone"
           echo "::set-output name=project_id::$project_id"
